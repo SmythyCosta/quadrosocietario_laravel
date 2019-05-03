@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 
@@ -10,21 +11,21 @@ class EmpresaController extends Controller
     //
     public function index()
     {
-        $e = Empresa::all();
-        return response()->json($e);
+        $obj = Empresa::all();
+        return response()->json(['empresas' => $obj]);
     }
 
     public function show($id)
     {
-        $e = Empresa::find($id);
+        $obj = Empresa::find($id);
 
-        if(!$e) {
+        if(!$obj) {
             return response()->json([
                 'message'   => 'Record not found',
             ], 404);
         }
 
-        return response()->json($e);
+        return response()->json(['empresa' => $obj]);
     }
 
     public function store(Request $request)
@@ -63,6 +64,27 @@ class EmpresaController extends Controller
         }
 
         $e->delete();
+    }
+
+    /**
+     * Retorna os Socios de uma empresa
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function empreaSociosById($id)
+    {
+
+        $obj = DB::table('socio')
+                    ->leftJoin('empresa', 'empresa.id', '=', 'socio.empresa_id')
+                    ->select('socio.id',
+                            'socio.nome',
+                            'empresa.nome as empresa')
+                    ->where('empresa.id', $id)
+                    ->get();
+
+        return response()->json(['socios' => $obj]);
+
     }
 
 

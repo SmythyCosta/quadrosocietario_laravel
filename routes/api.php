@@ -17,5 +17,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('empresas', 'EmpresaController');
+Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function () {
+	Route::resource('/empresas', 'EmpresaController');
+	Route::get('empresas/{id}/socios', 'EmpresaController@empreaSociosById');
+	Route::resource('socios', 'SocioController');
+});
+
+
+
+
+
+
+
+
 
